@@ -1,10 +1,11 @@
 <?php
 /*
 Plugin Name: Contact Monger
+Plugin URI:  https://github.com/andrewklimek/contactmonger/
 Description: shortcode [contactmonger]
 Version:     0.2
 Author:      Andrew J Klimek
-Author URI:  https://monger.net
+Author URI:  https://readycat.net
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
