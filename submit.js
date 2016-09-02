@@ -16,19 +16,19 @@ jQuery( document ).ready( function ( $ ) {
 		
 			$.ajax({
 				method: 'POST',
-				url: FORM_SUBMIT.root + 'formmonger/v1/submit',
+				url: '/wp-json/formmonger/v1/submit',
 				data: data,
 				success : function( response ) {
 					// console.log( response );
 					var button = e.currentTarget.querySelector('input[type=submit]');
 					// e.currentTarget.insertAdjacentHTML('beforebegin','<div class="form-success-message">' + FORM_SUBSCRIBE.success + '</div>');
-					e.currentTarget.innerHTML = '<h3 class="form-success-message">' + FORM_SUBMIT.success + '</h3>';
+					e.currentTarget.innerHTML = '<p class="form-success-message">Merci!</p>';
 					e.currentTarget.className += ' form-successfully-submitted';
 					// e.currentTarget.reset();
 				},
 				fail : function( response ) {
-					// console.log( response );
-					e.currentTarget.insertAdjacentHTML('beforebegin','<div class="form-error">' + FORM_SUBMIT.failure + '</div>');
+					console.log( response );
+					// e.currentTarget.insertAdjacentHTML('beforebegin','<div class="form-error">' + FORM_SUBMIT.failure + '</div>');
 				}
 			});
 		}

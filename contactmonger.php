@@ -28,10 +28,7 @@ function contactmonger( $atts, $content ) {
 	ob_start();?>
 	<form id="contactmonger-form" action="" method="post">
 		<div class="fields-wrapper">
-			<div>
-				<input type="text" name="first_name" placeholder="First Name">
-				<input type="text" name="last_name" placeholder="Last Name">
-			</div>
+			<input type="text" name="name" placeholder="Name">
 			<input type="text" name="company" placeholder="Company">
 			<input type="email" name="email" placeholder="Email Address">
 			<textarea name="message" placeholder="Comment"></textarea>
@@ -59,8 +56,8 @@ function contactmonger_submit( $request ) {
 	foreach ( $data as $key => $value ) {
 		$message .= "{$key}: {$value}\n";
 	}
-	$to = get_option('admin_email');
-	// $to = 'andrew@readycat.net';
+	// $to = get_option('admin_email');
+	$to = 'andrew@readycat.net';
 	
 	$sent = wp_mail( $to, "Website Contact Form", $message );
 
@@ -78,14 +75,19 @@ function contactmonger_submit( $request ) {
 add_action( 'wp_enqueue_scripts', function() {
 
 	//load script
-	wp_enqueue_script( 'contactmonger-submit', plugin_dir_url( __FILE__ ) . 'submit.js', array( 'jquery' ), plugin_dir_path( __FILE__ ) . 'submit.js' );
+	wp_enqueue_script( 'contactmonger-submit', plugin_dir_url( __FILE__ ) . 'submit.js', array( 'jquery' ), null );
 
 	//localize data for script
-	wp_localize_script( 'contactmonger-submit', 'FORM_SUBMIT', array(
-			'root' => esc_url_raw( rest_url() ),
-			'success' => 'Thanks!',
-			'failure' => 'Your submission could not be processed.',
-		)
-	);
+	// wp_localize_script( 'contactmonger-submit', 'FORM_SUBMIT', array(
+// 			'url' => esc_url_raw( rest_url('formmonger/v1/submit') ),
+// 			'success' => 'Thanks!',
+// 			'failure' => 'Your submission could not be processed.',
+// 		)
+// 	);
 
 });
+
+
+add_filter('script_loader_tag', function($tag, $handle) {
+	return ( 'contactmonger-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
+}, 10, 2);
