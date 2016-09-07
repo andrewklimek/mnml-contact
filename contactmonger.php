@@ -26,7 +26,7 @@ add_shortcode( 'contactmonger', 'contactmonger' );
 function contactmonger( $atts, $content ) {
 
 	ob_start();?>
-	<form id="contactmonger-form" action="" method="post">
+	<form id="contactmonger-form" method="post">
 		<div class="fields-wrapper">
 			<input type="text" name="name" placeholder="Name">
 			<input type="text" name="company" placeholder="Company">
