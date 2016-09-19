@@ -24,9 +24,11 @@ Contact Monger. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
 
 add_shortcode( 'contactmonger', 'contactmonger' );
 function contactmonger( $atts, $content ) {
+	
+	wp_enqueue_script( 'contactmonger-submit' );
 
 	ob_start();?>
-	<form id="contactmonger-form" method="post">
+	<form id="contactmonger" method="post">
 		<div class="fields-wrapper">
 			<input type="text" name="name" placeholder="Name">
 			<input type="text" name="company" placeholder="Company">
@@ -50,7 +52,7 @@ add_action( 'rest_api_init', function () {
 
 
 function contactmonger_submit( $request ) {
-	
+	// poo($request, 'request');
 	$data = $request->get_params();
 	$message = '';	
 	foreach ( $data as $key => $value ) {
@@ -70,24 +72,25 @@ function contactmonger_submit( $request ) {
 }
 
 /**
- * Setup JavaScript
- */
+* Setup JavaScript
+*/
 add_action( 'wp_enqueue_scripts', function() {
 
-	//load script
-	wp_enqueue_script( 'contactmonger-submit', plugin_dir_url( __FILE__ ) . 'submit.js', array( 'jquery' ), null );
+	$suffix = SCRIPT_DEBUG ? "" : ".min";
+
+	wp_register_script( 'contactmonger-submit', plugin_dir_url( __FILE__ ) . 'submit'.$suffix.'.js', null, null );
 
 	//localize data for script
 	// wp_localize_script( 'contactmonger-submit', 'FORM_SUBMIT', array(
-// 			'url' => esc_url_raw( rest_url('formmonger/v1/submit') ),
-// 			'success' => 'Thanks!',
-// 			'failure' => 'Your submission could not be processed.',
-// 		)
-// 	);
+		// 			'url' => esc_url_raw( rest_url('formmonger/v1/submit') ),
+		// 			'success' => 'Thanks!',
+		// 			'failure' => 'Your submission could not be processed.',
+		// 		)
+		// 	);
 
 });
 
 
-add_filter('script_loader_tag', function($tag, $handle) {
-	return ( 'contactmonger-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
-}, 10, 2);
+	add_filter('script_loader_tag', function($tag, $handle) {
+		return ( 'contactmonger-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
+	}, 10, 2);
