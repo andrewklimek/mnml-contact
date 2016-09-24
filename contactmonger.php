@@ -32,7 +32,7 @@ function contactmonger( $atts, $content ) {
 		<div class="fields-wrapper">
 			<input type="text" name="name" placeholder="Name">
 			<input type="text" name="company" placeholder="Company">
-			<input type="email" name="email" placeholder="Email Address">
+			<input type="email" name="email" placeholder="Email Address" required>
 			<textarea name="message" placeholder="Comment"></textarea>
 		</div>
 		<input type="submit" value="SEND">
