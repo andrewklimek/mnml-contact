@@ -29,7 +29,7 @@ function contactmonger( $atts, $content ) {
 
 	ob_start();?>
 	<form id="contactmonger" method="post">
-		<div class="fields-wrapper">
+		<div class="fields-wrapper fff fff-column">
 			<input type="text" name="name" placeholder="Name">
 			<input type="text" name="company" placeholder="Company">
 			<input type="email" name="email" placeholder="Email Address" required>
