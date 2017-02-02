@@ -31,7 +31,6 @@ function contactmonger( $atts, $content ) {
 	<form id="contactmonger" method="post">
 		<div class="fields-wrapper fff fff-column">
 			<input type="text" name="name" placeholder="Name">
-			<input type="text" name="company" placeholder="Company">
 			<input type="email" name="email" placeholder="Email Address" required>
 			<textarea name="message" placeholder="Comment"></textarea>
 		</div>
@@ -52,16 +51,22 @@ add_action( 'rest_api_init', function () {
 
 
 function contactmonger_submit( $request ) {
-	// poo($request, 'request');
+
 	$data = $request->get_params();
 	$message = '';	
 	foreach ( $data as $key => $value ) {
 		$message .= "{$key}: {$value}\n";
 	}
 	// $to = get_option('admin_email');
-	$to = 'andrew@readycat.net';
+	$to = 'andrew@ambientsleepingpill.com';
+	$subject = get_option('blogname') ." Contact Form";
+	$headers = array();
 	
-	$sent = wp_mail( $to, "Website Contact Form", $message );
+	if ( ! empty( $data['email'] ) ) {
+		$headers[] = "Reply-To: <{$data['email']}>";
+	}
+	
+	$sent = wp_mail( $to, $subject, $message, $headers );
 
 	if ( $sent ) {
 		return "success";
@@ -91,6 +96,6 @@ add_action( 'wp_enqueue_scripts', function() {
 });
 
 
-	add_filter('script_loader_tag', function($tag, $handle) {
-		return ( 'contactmonger-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
-	}, 10, 2);
+add_filter('script_loader_tag', function($tag, $handle) {
+	return ( 'contactmonger-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
+}, 10, 2);
