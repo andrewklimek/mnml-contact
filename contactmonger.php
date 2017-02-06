@@ -59,7 +59,12 @@ function contactmonger_submit( $request ) {
 	}
 	// $to = get_option('admin_email');
 	$to = 'andrew@ambientsleepingpill.com';
-	$subject = get_option('blogname') ." Contact Form";
+	
+	if ( ! empty( $data['name'] ) ) {
+		$subject = "contact form: {$data['name']}";
+	} else {
+		$subject = get_option('blogname') ." Contact Form";
+	}
 	$headers = array();
 	
 	if ( ! empty( $data['email'] ) ) {
