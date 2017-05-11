@@ -5,6 +5,7 @@
 		if ( ! form.checkValidity() ) {// stupid custom validation for safari
 			form.insertAdjacentHTML('beforeend','<style>#contactmonger :invalid{border-color:#f66;}</style>');
 		} else {
+			form.querySelector('input[type=submit]').style.visibility = "hidden";
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', '/wp-json/formmonger/v1/submit');
 			// xhr.setRequestHeader( 'X-WP-Nonce', POST_SUBMITTER.nonce );
