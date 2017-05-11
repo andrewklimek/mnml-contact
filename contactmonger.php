@@ -55,8 +55,7 @@ function contactmonger_submit( $request ) {
 	foreach ( $data as $key => $value ) {
 		$message .= "{$key}: {$value}\n";
 	}
-	// $to = get_option('admin_email');
-	$to = 'andrew@ambientsleepingpill.com';
+	$to = get_option('admin_email');
 	
 	if ( ! empty( $data['name'] ) ) {
 		$subject = "contact form: {$data['name']}";
@@ -68,20 +67,19 @@ function contactmonger_submit( $request ) {
 	if ( ! empty( $data['email'] ) ) {
 		$headers[] = "Reply-To: <{$data['email']}>";
 		
-		if ( ! empty( $data['subscribe'] ) ) {
-			$signup = contactmonger_ac_add( $data );
-			error_log( $signup );
-		}
+		// if ( ! empty( $data['subscribe'] ) ) {
+		// 	$signup = contactmonger_ac_add( $data );
+		// 	error_log( $signup );
+		// }
 	}
 	
 	$sent = wp_mail( $to, $subject, $message, $headers );
 
 	if ( $sent ) {
-		if ( $signup ) {
-			return $signup;
-		} else {
+		// if ( $signup )
+		// 	return $signup;
+		// else
 			return "success";
-		}
 	} else {
 		return new WP_Error( 'mail_send_failed', 'mail send failed', array( 'status' => 404 ) );
 	}
