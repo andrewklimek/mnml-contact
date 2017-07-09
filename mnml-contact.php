@@ -1,34 +1,34 @@
 <?php
 /*
-Plugin Name: Contact Monger
-Plugin URI:  https://github.com/andrewklimek/contactmonger/
-Description: shortcode [contactmonger]
+Plugin Name: Minimalist Contact
+Plugin URI:  https://github.com/andrewklimek/mnml-contact/
+Description: shortcode [mnmlcontact]
 Version:     0.2
 Author:      Andrew J Klimek
-Author URI:  https://readycat.net
+Author URI:  https://andrewklimek.com
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Contact Monger is free software: you can redistribute it and/or modify 
+Minimalist Contact is free software: you can redistribute it and/or modify 
 it under the terms of the GNU General Public License as published by the Free 
 Software Foundation, either version 2 of the License, or any later version.
 
-Contact Monger is distributed in the hope that it will be useful, but without 
+Minimalist Contact is distributed in the hope that it will be useful, but without 
 any warranty; without even the implied warranty of merchantability or fitness for a 
 particular purpose. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with 
-Contact Monger. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
+Minimalist Contact. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
 */
 
 
-add_shortcode( 'contactmonger', 'contactmonger' );
-function contactmonger( $atts, $content ) {
+add_shortcode( 'mnmlcontact', 'mnmlcontact' );
+function mnmlcontact( $atts, $content ) {
 	
-	wp_enqueue_script( 'contactmonger-submit' );
+	wp_enqueue_script( 'mnmlcontact-submit' );
 
 	return <<<FORM
-	<form id="contactmonger" method="post">
+	<form id="mnmlcontact" method="post">
 		<div class="fields-wrapper fff fff-column">
 			<input type="text" name="name" placeholder="Name">
 			<input type="email" name="email" placeholder="Email Address" required>
@@ -41,14 +41,14 @@ FORM;
 }
 
 add_action( 'rest_api_init', function () {
-	register_rest_route( 'formmonger/v1', '/submit', array(
+	register_rest_route( 'mnmlcontact/v1', '/submit', array(
 		'methods' => 'POST',
-		'callback' => 'contactmonger_submit',
+		'callback' => 'mnmlcontact_submit',
 	) );
 } );
 
 
-function contactmonger_submit( $request ) {
+function mnmlcontact_submit( $request ) {
 
 	$data = $request->get_params();
 	$message = $signup = '';	
@@ -68,7 +68,7 @@ function contactmonger_submit( $request ) {
 		$headers[] = "Reply-To: <{$data['email']}>";
 		
 		// if ( ! empty( $data['subscribe'] ) ) {
-		// 	$signup = contactmonger_ac_add( $data );
+		// 	$signup = mnmlcontact_ac_add( $data );
 		// 	error_log( $signup );
 		// }
 	}
@@ -93,11 +93,11 @@ add_action( 'wp_enqueue_scripts', function() {
 
 	$suffix = SCRIPT_DEBUG ? "" : ".min";
 
-	wp_register_script( 'contactmonger-submit', plugin_dir_url( __FILE__ ) . 'submit'.$suffix.'.js', null, null );
+	wp_register_script( 'mnmlcontact-submit', plugin_dir_url( __FILE__ ) . 'submit'.$suffix.'.js', null, null );
 
 	//localize data for script
-	// wp_localize_script( 'contactmonger-submit', 'FORM_SUBMIT', array(
-		// 			'url' => esc_url_raw( rest_url('formmonger/v1/submit') ),
+	// wp_localize_script( 'mnmlcontact-submit', 'FORM_SUBMIT', array(
+		// 			'url' => esc_url_raw( rest_url('mnmlcontact/v1/submit') ),
 		// 			'success' => 'Thanks!',
 		// 			'failure' => 'Your submission could not be processed.',
 		// 		)
@@ -107,11 +107,11 @@ add_action( 'wp_enqueue_scripts', function() {
 
 
 add_filter('script_loader_tag', function($tag, $handle) {
-	return ( 'contactmonger-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
+	return ( 'mnmlcontact-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
 }, 10, 2);
 
 
-function contactmonger_ac_add( $data ) {
+function mnmlcontact_ac_add( $data ) {
 	
 	$url = 'https://stereoscenic.api-us1.com';// no trailing /
 

@@ -28,18 +28,18 @@
 		e.preventDefault();
 		var form = this;
 		if ( ! form.checkValidity() ) {// stupid custom validation for safari
-			form.insertAdjacentHTML('beforeend','<style>#contactmonger :invalid{border-color:#f66;}</style>');
+			form.insertAdjacentHTML('beforeend','<style>#mnmlcontact :invalid{border-color:#f66;}</style>');
 		} else {
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/wp-json/formmonger/v1/submit');
+			xhr.open('POST', '/wp-json/mnmlcontact/v1/submit');
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 			// xhr.setRequestHeader( 'X-WP-Nonce', POST_SUBMITTER.nonce );
 			xhr.onreadystatechange = function() {
 				if (this.readyState === 4) {
 					if (this.status >= 200 && this.status < 400) {
 						console.log(this.responseText);
-						form.innerHTML = '<p class="contactmonger-success">Merci!</p>';
-						// form.className += ' contactmonger-success';
+						form.innerHTML = '<p class="mnmlcontact-success">Merci!</p>';
+						// form.className += ' mnmlcontact-success';
 					} else {
 						console.log(this.responseText);
 					}
@@ -49,5 +49,5 @@
 			// xhr = null;
 		}
 	}
-	document.getElementById('contactmonger').addEventListener('submit', submit );
+	document.getElementById('mnmlcontact').addEventListener('submit', submit );
 })();
