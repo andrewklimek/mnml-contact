@@ -3,7 +3,7 @@
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
 Description: shortcode [mnmlcontact]
-Version:     0.2
+Version:     0.3.1
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
@@ -23,7 +23,7 @@ Minimalist Contact. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
 
 
 add_shortcode( 'mnmlcontact', 'mnmlcontact' );
-function mnmlcontact( $atts, $content ) {
+function mnmlcontact( $a='', $c='' ) {
 	
 	wp_enqueue_script( 'mnmlcontact-submit' );
 
@@ -38,6 +38,10 @@ function mnmlcontact( $atts, $content ) {
 		<input type="submit" value="SEND">
 	</form>
 FORM;
+}
+
+function echo_mnmlcontact() {
+    echo mnmlcontact();
 }
 
 add_action( 'rest_api_init', function () {
@@ -113,13 +117,13 @@ add_filter('script_loader_tag', function($tag, $handle) {
 
 function mnmlcontact_ac_add( $data ) {
 	
-	$url = 'https://stereoscenic.api-us1.com';// no trailing /
+	$url = 'https://example.api-us1.com';// no trailing /
 
 	$params = array(
 
 	    // the API Key can be found on the "Your Settings" page under the "API" tab.
 	    // replace this with your API Key
-	    'api_key'      => 'af82edd471fa4bc1e49c86e309818e640edbf0458091c986406c82ad9704d8679b62db68',
+	    'api_key'      => 'kyyjyufugtiuyiexampleyi967ygfyy66r67',
 
 	    // this is the action that adds a contact
 	    'api_action'   => 'contact_add',
