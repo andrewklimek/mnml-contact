@@ -1,5 +1,5 @@
 (function(){
-	// handle form serialization as an alternative to using FormData objects. add 
+	// handle form serialization as an alternative to using FormData objects (if you need IE 9). add 
 	function serialize(obj) {
 		// if(obj.nodeName == "FORM"){
 		var field, s = [];
@@ -46,7 +46,7 @@
 				}
 			};
 			xhr.send(serialize(form));
-			// xhr = null;
+			// xhr = null;// IE8??
 		}
 	}
 	document.getElementById('mnmlcontact').addEventListener('submit', submit );

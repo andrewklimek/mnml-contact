@@ -18,7 +18,6 @@
 				btn.disabled = false;
 			};
 			xhr.send(new FormData(form));
-			// xhr = null;
 		}
 	}
 	document.getElementById('mnmlcontact').addEventListener('submit', submit);
