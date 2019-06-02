@@ -2,7 +2,7 @@
 	function submit(e) {
 		e.preventDefault();
 		var form = this;
-		btn = form.querySelector('input[type=submit]');
+		btn = form.querySelector('[type=submit]');
 		if ( ! form.checkValidity() ) {// stupid custom validation for safari
 			form.insertAdjacentHTML('beforeend','<style>#mnmlcontact :invalid{border-color:#f66;}</style>');
 		} else {

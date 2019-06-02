@@ -25,10 +25,10 @@ Minimalist Contact. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
 add_shortcode( 'mnmlcontact', 'mnmlcontact' );
 function mnmlcontact( $a='', $c='' ) {
 	
-	wp_enqueue_script( 'mnmlcontact-submit' );
+	// wp_enqueue_script( 'mnmlcontact-submit' );
 
 	return <<<FORM
-	<form id="mnmlcontact" method="post">
+	<form id=mnmlcontact method=post onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;x.open('POST','/wp-json/mnmlcontact/v1/submit'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
 		<div class="fields-wrapper fff fff-column">
 			<input type="text" name="name" placeholder="Name">
 			<input type="email" name="email" placeholder="Email Address" required>
@@ -86,8 +86,8 @@ function mnmlcontact_submit( $request ) {
 }
 
 /**
-* Setup JavaScript
-*/
+* Setup JavaScript - Currently putting JS in the form element's onsubmit attribute
+*
 add_action( 'wp_enqueue_scripts', function() {
 
 	$suffix = SCRIPT_DEBUG ? "" : ".min";
@@ -104,7 +104,7 @@ add_action( 'wp_enqueue_scripts', function() {
 
 });
 
-
 add_filter('script_loader_tag', function($tag, $handle) {
 	return ( 'mnmlcontact-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
 }, 10, 2);
+*/
