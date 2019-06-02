@@ -31,7 +31,7 @@
 			form.insertAdjacentHTML('beforeend','<style>#mnmlcontact :invalid{border-color:#f66;}</style>');
 		} else {
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/wp-json/mnmlcontact/v1/submit');
+			xhr.open('POST', '/wp-json/mnmlcontact/v1/s');
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 			// xhr.setRequestHeader( 'X-WP-Nonce', POST_SUBMITTER.nonce );
 			xhr.onreadystatechange = function() {

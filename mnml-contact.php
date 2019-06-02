@@ -2,8 +2,8 @@
 /*
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
-Description: shortcode [mnmlcontact]
-Version:     0.4.0
+Description: shortcode [mnmlcontact subject='custom email subject' textarea='placeholder text' subscribe='label text or false for no check box'] 
+Version:     0.4.1
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
@@ -34,7 +34,7 @@ function mnmlcontact( $atts, $content='', $tag ) {
 	// wp_enqueue_script( 'mnmlcontact-submit' );
 	
 	ob_start();?>
-	<form id=mnmlcontact method=post onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;x.open('POST','/wp-json/mnmlcontact/v1/submit'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
+	<form id=mnmlcontact method=post onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
 		<div class="fields-wrapper fff fff-column">
 			<?php if ( $atts['textarea'] ) echo "<textarea name=message placeholder='{$atts['textarea']}'></textarea>"; ?>
 			<input type=text name=name autocomplete=name placeholder=name>
@@ -55,7 +55,7 @@ function echo_mnmlcontact() {
 }
 
 add_action( 'rest_api_init', function () {
-	register_rest_route( 'mnmlcontact/v1', '/submit', array(
+	register_rest_route( 'mnmlcontact/v1', '/s', array(
 		'methods' => ['POST','GET'],
 		'callback' => 'mnmlcontact_submit',
 	) );

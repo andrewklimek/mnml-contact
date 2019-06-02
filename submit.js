@@ -8,7 +8,7 @@
 		} else {
 			btn.disabled = true;
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/wp-json/mnmlcontact/v1/submit');
+			xhr.open('POST', '/wp-json/mnmlcontact/v1/s');
 			// xhr.setRequestHeader( 'X-WP-Nonce', POST_SUBMITTER.nonce );
 			xhr.onload = function() {
 				btn.value = "Thanks!";
