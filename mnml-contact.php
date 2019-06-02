@@ -111,9 +111,8 @@ function mnmlcontact_submit( $request ) {
 		{
 			$success_message = '<p style="border:1px solid currentColor;padding:.8em">';
 			if ( ! empty( $data['message'] ) ) $success_message .= 'Your message was sent.  ';
-			elseif ( ! empty( $data['subscribe'] ) ) $success_message .= 'Thanks for subscribing!';
+			if ( ! empty( $data['subscribe'] ) ) $success_message .= 'Thanks for subscribing!';
 			else $success_message .= 'You did not enter a message, nor you did not tick “subscribe”... did something go wrong? <a href="javascript:window.location.reload()">Click here to refresh and try again.</a>';
-		
 			return $success_message;
 		}
 	}
