@@ -3,7 +3,7 @@
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
 Description: shortcode [mnmlcontact]
-Version:     0.3.1
+Version:     0.4.0
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
@@ -23,21 +23,31 @@ Minimalist Contact. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
 
 
 add_shortcode( 'mnmlcontact', 'mnmlcontact' );
-function mnmlcontact( $a='', $c='' ) {
+function mnmlcontact( $atts, $content='', $tag ) {
+
+	$atts = shortcode_atts( array(
+		'subscribe' => 'subscribe',
+		'textarea' => 'message',
+		'subject' => '',
+	), $atts, $tag );
 	
 	// wp_enqueue_script( 'mnmlcontact-submit' );
-
-	return <<<FORM
+	
+	ob_start();?>
 	<form id=mnmlcontact method=post onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;x.open('POST','/wp-json/mnmlcontact/v1/submit'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
 		<div class="fields-wrapper fff fff-column">
-			<input type="text" name="name" placeholder="Name">
-			<input type="email" name="email" placeholder="Email Address" required>
-			<textarea name="message" placeholder="Comment"></textarea>
-			<label><input type="checkbox" name="subscribe" value="1"> Send me news</label>
+			<?php if ( $atts['textarea'] ) echo "<textarea name=message placeholder='{$atts['textarea']}'></textarea>"; ?>
+			<input type=text name=name autocomplete=name placeholder=name>
+			<input type=email name=email autocomplete=email placeholder="email address" required>
+			<?php if ( $atts['subject'] ) echo "<input type=hidden name=subject value='{$atts['subject']}'>"; ?>
+			<div class='fff fff-spacebetween fff-middle'>
+				<?php if ( $atts['subscribe'] ) echo "<label><input type=checkbox name=subscribe value=1> {$atts['subscribe']}</label>"; ?>
+				<input type=submit value=send>
+			</div>
 		</div>
-		<input type="submit" value="SEND">
 	</form>
-FORM;
+	<?php
+	return ob_get_clean();
 }
 
 function echo_mnmlcontact() {
@@ -46,7 +56,7 @@ function echo_mnmlcontact() {
 
 add_action( 'rest_api_init', function () {
 	register_rest_route( 'mnmlcontact/v1', '/submit', array(
-		'methods' => 'POST',
+		'methods' => ['POST','GET'],
 		'callback' => 'mnmlcontact_submit',
 	) );
 } );
@@ -55,31 +65,62 @@ add_action( 'rest_api_init', function () {
 function mnmlcontact_submit( $request ) {
 
 	$data = $request->get_params();
-	$message = $signup = '';	
-	foreach ( $data as $key => $value ) {
-		$message .= "{$key}: {$value}\n";
-	}
-	$to = get_option('admin_email');
+	$message = '';	
 	
-	if ( ! empty( $data['name'] ) ) {
-		$subject = "contact form: {$data['name']}";
-	} else {
+	// lowercase email address
+	if ( ! empty( $data['email'] ) ) $data['email'] = strtolower( $data['email'] );
+	
+	$to = apply_filters( 'mnmlcontact_to', false );
+	if ( ! $to ) $to = get_option('admin_email');
+	
+	if ( empty( $data['subject'] ) )
+	{
 		$subject = get_option('blogname') ." Contact Form";
 	}
+	else
+	{
+		$subject = $data['subject'];
+		unset( $data['subject'] );
+	}
+	if ( ! empty( $data['name'] ) ) $subject .= ": {$data['name']}";
+	elseif ( ! empty( $data['email'] ) ) $subject .= ": {$data['email']}";
+	
 	$headers = array();
 	
 	if ( ! empty( $data['email'] ) ) {
 		$headers[] = "Reply-To: <{$data['email']}>";
 	}
 	
+	foreach ( $data as $key => $value ) {
+		$message .= "{$key}: {$value}\n";
+	}
+	
 	$sent = wp_mail( $to, $subject, $message, $headers );
-
-	if ( $sent ) {
-		// if ( $signup )
-		// 	return $signup;
-		// else
-			return "success";
-	} else {
+	
+	if ( $sent )
+	{
+		if ( "GET" === $request->get_method() )
+		{
+			// You can make a link that auto submits tis form with URL parameters
+			// I might use it to give people a one click sign up (submit form with "subscribe" checked)
+			// If that methos was used, redirect them to a thank-you page.
+			wp_redirect( home_url( "signup-success" ) );
+			exit;
+		}
+		else
+		{
+			$success_message = '<p style="border:1px solid currentColor;padding:.8em">';
+			if ( ! empty( $data['message'] ) ) $success_message .= 'Your message was sent.  ';
+			elseif ( ! empty( $data['subscribe'] ) ) $success_message .= 'Thanks for subscribing!';
+			else $success_message .= 'You did not enter a message, nor you did not tick “subscribe”... did something go wrong? <a href="javascript:window.location.reload()">Click here to refresh and try again.</a>';
+		
+			return $success_message;
+		}
+	}
+	else
+	{
+		error_log("Contact form failed");
+		error_log( var_export( $data, true ) );
 		return new WP_Error( 'mail_send_failed', 'mail send failed', array( 'status' => 404 ) );
 	}
 	
