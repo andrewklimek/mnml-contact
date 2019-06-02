@@ -70,11 +70,6 @@ function mnmlcontact_submit( $request ) {
 	
 	if ( ! empty( $data['email'] ) ) {
 		$headers[] = "Reply-To: <{$data['email']}>";
-		
-		// if ( ! empty( $data['subscribe'] ) ) {
-		// 	$signup = mnmlcontact_ac_add( $data );
-		// 	error_log( $signup );
-		// }
 	}
 	
 	$sent = wp_mail( $to, $subject, $message, $headers );
@@ -113,85 +108,3 @@ add_action( 'wp_enqueue_scripts', function() {
 add_filter('script_loader_tag', function($tag, $handle) {
 	return ( 'mnmlcontact-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
 }, 10, 2);
-
-
-function mnmlcontact_ac_add( $data ) {
-	
-	$url = 'https://example.api-us1.com';// no trailing /
-
-	$params = array(
-
-	    // the API Key can be found on the "Your Settings" page under the "API" tab.
-	    // replace this with your API Key
-	    'api_key'      => 'kyyjyufugtiuyiexampleyi967ygfyy66r67',
-
-	    // this is the action that adds a contact
-	    'api_action'   => 'contact_add',
-
-	    // define the type of output you wish to get back
-	    // possible values:
-	    // - 'xml'  :      you have to write your own XML parser
-	    // - 'json' :      data is returned in JSON format and can be decoded with
-	    //                 json_decode() function (included in PHP since 5.2.0)
-	    // - 'serialize' : data is returned in a serialized format and can be decoded with
-	    //                 a native unserialize() function
-	    'api_output'   => 'json'
-	);
-	
-	// here we define the data we are posting in order to perform an update
-	$post = array(
-	    'email'                    => $data['email'],
-	    //'first_name'               => $name[0],// names added below
-	    //'last_name'                => $name[1],
-	    'tags'                     => 'api',
-	    //'ip4'                    => '127.0.0.1',
-
-	    // any custom fields
-	    //'field[345,0]'           => 'field value', // where 345 is the field ID
-	    //'field[%PERS_1%,0]'      => 'field value', // using the personalization tag instead (make sure to encode the key)
-
-	    // assign to lists:
-	    'p[4]'                   => 4, // example list ID (REPLACE '123' WITH ACTUAL LIST ID, IE: p[5] = 5)
-	    'status[4]'              => 1, // 1: active, 2: unsubscribed (REPLACE '123' WITH ACTUAL LIST ID, IE: status[5] = 1)
-	    //'form'          => 1001, // Subscription Form ID, to inherit those redirection settings
-	    //'noresponders[123]'      => 1, // uncomment to set "do not send any future responders"
-	    //'sdate[123]'             => '2009-12-07 06:00:00', // Subscribe date for particular list - leave out to use current date/time
-	    // use the folowing only if status=1
-	    'instantresponders[4]' => 1, // set to 0 to if you don't want to sent instant autoresponders
-	    //'lastmessage[123]'       => 1, // uncomment to set "send the last broadcast campaign"
-
-	    //'p[]'                    => 345, // some additional lists?
-	    //'status[345]'            => 1, // some additional lists?
-	);
-	
-	if ( ! empty( $data['name'] ) ) {
-		$name = explode( ' ', $data['name'], 2 );
-		$post['first_name'] = $name[0];
-        if ( ! empty( $name[1] ) )
-    		$post['last_name'] = $name[1];
-	}
-
-	$query = http_build_query( $params );
-	$body = http_build_query( $post );
-
-	// clean up the url
-	// $url = rtrim($url, '/ ');
-
-
-	// define a final API request - GET
-	$url = $url . '/admin/api.php?' . $query;
-
-	$response = wp_remote_post( $url, array( 'body' => $body ) );
-	
-	if ( is_wp_error( $response ) ) {
-				
-		die( 'Request failed. '. $response->get_error_message() );
-				
-	} else {
-		$result = json_decode($response['body']);
-
-		// Result info that is always returned
-		return ( $result->result_code ? 'SUCCESS' : 'FAILED' ) . ' - ' . $result->result_message . ' - ' . $data['email'];
-	}
-
-}
