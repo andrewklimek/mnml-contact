@@ -3,7 +3,7 @@
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
 Description: shortcode [mnmlcontact subject='custom email subject' textarea='placeholder text' subscribe='label text or false for no check box'] 
-Version:     0.4.1
+Version:     0.4.2
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
@@ -97,6 +97,8 @@ function mnmlcontact_submit( $request ) {
 	
 	$sent = wp_mail( $to, $subject, $message, $headers );
 	
+	// error_log($message);
+	
 	if ( $sent )
 	{
 		if ( "GET" === $request->get_method() )
@@ -109,10 +111,10 @@ function mnmlcontact_submit( $request ) {
 		}
 		else
 		{
-			$success_message = '<p style="border:1px solid currentColor;padding:.8em">';
+			$success_message = '<p>';// style="border:1px solid;padding:12px"
 			if ( ! empty( $data['message'] ) ) $success_message .= 'Your message was sent.  ';
 			if ( ! empty( $data['subscribe'] ) ) $success_message .= 'Thanks for subscribing!';
-			else $success_message .= 'You did not enter a message, nor you did not tick “subscribe”... did something go wrong? <a href="javascript:window.location.reload()">Click here to refresh and try again.</a>';
+			elseif ( empty( $data['message'] ) ) $success_message .= 'You did not enter a message, nor you did not tick “subscribe”... did something go wrong? <a href="javascript:window.location.reload()">Click here to refresh and try again.</a>';
 			return $success_message;
 		}
 	}
