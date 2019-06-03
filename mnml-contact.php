@@ -29,7 +29,24 @@ function mnmlcontact( $atts, $content='', $tag ) {
 		'subscribe' => 'subscribe',
 		'textarea' => 'message',
 		'subject' => '',
+		'to' => '',
 	), $atts, $tag );
+	
+	// Save TO address to database and replace with an ID for privacy
+	$to_field = "";
+	if ( $atts['to'] )
+	{
+		$to_index = false;
+		$tos = get_option( 'mnmlcontact_to', array('skip 0') );
+		$to_index = array_search( $atts['to'], $tos );// see if address has been saved before
+		if ( ! $to_index ) {
+			// email not in DB (or option not set at all)
+			$to_index = count( $tos );
+			$tos[] = $atts['to'];
+			update_option( 'mnmlcontact_to', $tos );
+		}
+		$to_field = "<input type=hidden name=to value={$to_index}>";
+	}
 	
 	// wp_enqueue_script( 'mnmlcontact-submit' );
 	
@@ -39,7 +56,8 @@ function mnmlcontact( $atts, $content='', $tag ) {
 			<?php if ( $atts['textarea'] ) echo "<textarea name=message placeholder='{$atts['textarea']}'></textarea>"; ?>
 			<input type=text name=name autocomplete=name placeholder=name>
 			<input type=email name=email autocomplete=email placeholder="email address" required>
-			<?php if ( $atts['subject'] ) echo "<input type=hidden name=subject value='{$atts['subject']}'>"; ?>
+			<?php if ( $atts['subject'] ) echo "<input type=hidden name=subject value='{$atts['subject']}'>";
+			echo $to_field; ?>
 			<div class='fff fff-spacebetween fff-middle'>
 				<?php if ( $atts['subscribe'] ) echo "<label><input type=checkbox name=subscribe value=1> {$atts['subscribe']}</label>"; ?>
 				<input type=submit value=send>
@@ -66,11 +84,19 @@ function mnmlcontact_submit( $request ) {
 
 	$data = $request->get_params();
 	$message = '';	
-	
+
 	// lowercase email address
 	if ( ! empty( $data['email'] ) ) $data['email'] = strtolower( $data['email'] );
 	
-	$to = apply_filters( 'mnmlcontact_to', false );
+	// TO
+	$to = "";
+	if ( $data['to'] )// ID for a TO email address, passed as a hidden field (don't want the actual address in the HTML)
+	{
+		if ( $tos = get_option( 'mnmlcontact_to' ) )
+			$to = $tos[ (int) $data['to'] ];
+		unset( $data['to'] );
+	}	
+	if ( ! $to ) $to = apply_filters( 'mnmlcontact_to', false );
 	if ( ! $to ) $to = get_option('admin_email');
 	
 	if ( empty( $data['subject'] ) )
@@ -114,7 +140,12 @@ function mnmlcontact_submit( $request ) {
 			$success_message = '<p>';// style="border:1px solid;padding:12px"
 			if ( ! empty( $data['message'] ) ) $success_message .= 'Your message was sent.  ';
 			if ( ! empty( $data['subscribe'] ) ) $success_message .= 'Thanks for subscribing!';
-			elseif ( empty( $data['message'] ) ) $success_message .= 'You did not enter a message, nor you did not tick “subscribe”... did something go wrong? <a href="javascript:window.location.reload()">Click here to refresh and try again.</a>';
+			elseif ( empty( $data['message'] ) && isset( $data['message'] ) ) {// if message field was in form but is empty (and subscribe field is also empty via elseif)
+				$success_message .= 'You did not enter a message';
+				if ( isset( $data['subscribe'] ) )// the subscribe field is empty (via elseif) but was in form
+					$success_message .= ', nor you did not tick “subscribe”';
+				$success_message .= '... did something go wrong? <a href="javascript:window.location.reload()">Click here to refresh and try again.</a>';
+			}
 			return $success_message;
 		}
 	}
