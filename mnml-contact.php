@@ -3,7 +3,7 @@
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
 Description: shortcode [mnmlcontact subject='custom email subject' textarea='placeholder text' subscribe='label text or false for no check box'] 
-Version:     0.5.1
+Version:     0.6.0
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
@@ -60,9 +60,10 @@ function mnmlcontact( $atts, $content='', $tag ) {
 			echo $to_field; ?>
 			<div class='fff fff-spacebetween fff-middle'>
 				<?php if ( $atts['subscribe'] ) echo "<label><input type=checkbox name=subscribe checked> {$atts['subscribe']}</label>"; ?>
-				<input type=submit value=send>
+				<input id=mnmlcsub type=submit value=send disabled>
 			</div>
 		</div>
+		<script>setTimeout("document.getElementById('mnmlcsub').disabled=0",5e4)</script>
 	</form>
 	<?php
 	return ob_get_clean();
