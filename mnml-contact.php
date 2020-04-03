@@ -63,7 +63,7 @@ function mnmlcontact( $atts, $content='', $tag ) {
 				<input id=mnmlcsub type=submit value=send disabled>
 			</div>
 		</div>
-		<script>setTimeout("document.getElementById('mnmlcsub').disabled=0",5e3)</script>
+		<script>setTimeout("document.getElementById('mnmlcsub').disabled=0",1e4)</script>
 	</form>
 	<?php
 	return ob_get_clean();
