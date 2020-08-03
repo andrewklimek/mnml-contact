@@ -3,7 +3,7 @@
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
 Description: shortcode [mnmlcontact subject='custom email subject' textarea='placeholder text' subscribe='label text or false for no check box'] 
-Version:     0.6.1
+Version:     0.6.2
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
@@ -30,6 +30,8 @@ function mnmlcontact( $atts, $content='', $tag ) {
 		'textarea' => 'message',
 		'subject' => '',
 		'to' => '',
+		'style' => '',
+		'class' => '',
 	), $atts, $tag );
 	
 	// Save TO address to database and replace with an ID for privacy
@@ -51,12 +53,15 @@ function mnmlcontact( $atts, $content='', $tag ) {
 	// wp_enqueue_script( 'mnmlcontact-submit' );
 	
 	ob_start();?>
-	<form id=mnmlcontact method=post onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
+	<form id=mnmlcontact method=post<?php
+		if ( $atts['class'] ) echo ' class="' . $atts['class'] . '"';
+		if ( $atts['style'] ) echo ' style="' . $atts['style'] . '"';
+		?> onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
 		<div class="fields-wrapper fff fff-column">
-			<?php if ( $atts['textarea'] ) echo "<textarea name=message placeholder='{$atts['textarea']}'></textarea>"; ?>
 			<input type=text name=name autocomplete=name placeholder=name>
 			<input type=email name=email autocomplete=email placeholder="email address" required>
-			<?php if ( $atts['subject'] ) echo "<input type=hidden name=subject value='{$atts['subject']}'>";
+			<?php if ( $atts['textarea'] ) echo "<textarea name=message placeholder='{$atts['textarea']}'></textarea>";
+			if ( $atts['subject'] ) echo "<input type=hidden name=subject value='{$atts['subject']}'>";
 			echo $to_field; ?>
 			<div class='fff fff-spacebetween fff-middle'>
 				<?php if ( $atts['subscribe'] ) echo "<label><input type=checkbox name=subscribe checked> {$atts['subscribe']}</label>"; ?>
