@@ -3,7 +3,7 @@
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
 Description: shortcode [mnmlcontact subject='custom email subject' textarea='placeholder text' subscribe='label text or false for no check box'] 
-Version:     0.6.0
+Version:     0.6.1
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
@@ -156,7 +156,8 @@ function mnmlcontact_submit( $request ) {
 	{
 		error_log("Contact form failed");
 		error_log( var_export( $data, true ) );
-		return new WP_Error( 'mail_send_failed', 'mail send failed', array( 'status' => 404 ) );
+		return "Something went wrong.  Please try again later.";
+		// return new WP_Error( 'mail_send_failed', 'mail send failed', array( 'status' => 404 ) );
 	}
 	
 }
