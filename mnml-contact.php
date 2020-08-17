@@ -56,7 +56,7 @@ function mnmlcontact( $atts, $content='', $tag ) {
 	<form id=mnmlcontact method=post<?php
 		if ( $atts['class'] ) echo ' class="' . $atts['class'] . '"';
 		if ( $atts['style'] ) echo ' style="' . $atts['style'] . '"';
-		?> onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
+		?> onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;t.querySelector('#mnmlcsub').style.visibility='hidden';x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
 		<div class="fields-wrapper fff fff-column">
 			<input type=text name=name autocomplete=name placeholder=name>
 			<input type=email name=email autocomplete=email placeholder="email address" required>
