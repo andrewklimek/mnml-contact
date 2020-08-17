@@ -126,6 +126,8 @@ function mnmlcontact_submit( $request ) {
 	foreach ( $data as $key => $value ) {
 		$message .= "{$key}: {$value}\n";
 	}
+
+	$message .= "\nuser agent:\n" . $_SERVER['HTTP_USER_AGENT'];
 	
 	$sent = wp_mail( $to, $subject, $message, $headers );
 	
