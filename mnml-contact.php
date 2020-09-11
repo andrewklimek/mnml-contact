@@ -82,6 +82,7 @@ add_action( 'rest_api_init', function () {
 	register_rest_route( 'mnmlcontact/v1', '/s', array(
 		'methods' => ['POST','GET'],
 		'callback' => 'mnmlcontact_submit',
+		'permission_callback' => '__return_true',
 	) );
 } );
 
