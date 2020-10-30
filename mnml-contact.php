@@ -132,9 +132,12 @@ function mnmlcontact_submit( $request ) {
 	
 	$sent = wp_mail( $to, $subject, $message, $headers );
 	
-	// basic method of logging subscribers to a tsv until an integration is made.
-	if ( ! empty( $data['subscribe'] ) )
-		file_put_contents( __DIR__ . '/signups.tsv', "{$data['email']}\t{$data['name']}\n", FILE_APPEND );
+	if ( ! empty( $data['subscribe'] ) && ! empty( $data['email'] ) ) {
+
+		do_action( 'mnml_contact_subscribe',  $data['email'], $data['name'] );
+		// basic method of logging subscribers to a tsv until an integration is made.
+		// file_put_contents( __DIR__ . '/signups.tsv', "{$data['email']}\t{$data['name']}\n", FILE_APPEND );
+	}
 	
 	if ( $sent )
 	{
