@@ -23,15 +23,19 @@ Minimalist Contact. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
 
 
 add_shortcode( 'mnmlcontact', 'mnmlcontact' );
-function mnmlcontact( $atts, $content='', $tag ) {
+function mnmlcontact( $atts, $content='', $tag='' ) {
 
 	$atts = shortcode_atts( array(
 		'subscribe' => 'subscribe',
 		'textarea' => 'message',
+		'name' => 'name',
+		'email' => 'email address',
+		'submit' => 'send',
 		'subject' => '',
 		'to' => '',
 		'style' => '',
 		'class' => '',
+		'timeout' => '10',
 	), $atts, $tag );
 	
 	// Save TO address to database and replace with an ID for privacy
@@ -58,17 +62,24 @@ function mnmlcontact( $atts, $content='', $tag ) {
 		if ( $atts['style'] ) echo ' style="' . $atts['style'] . '"';
 		?> onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;t.querySelector('#mnmlcsub').style.visibility='hidden';x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
 		<div class="fields-wrapper fff fff-column">
-			<input type=text name=name autocomplete=name placeholder=name>
-			<input type=email name=email autocomplete=email placeholder="email address" required>
+			<input type=email name=email autocomplete=email placeholder="<?php echo $atts['email']; ?>" required>
+			<input type=text name=name autocomplete=name placeholder="<?php echo $atts['name']; ?>">
 			<?php if ( $atts['textarea'] ) echo "<textarea name=message placeholder='{$atts['textarea']}'></textarea>";
 			if ( $atts['subject'] ) echo "<input type=hidden name=subject value='{$atts['subject']}'>";
 			echo $to_field; ?>
-			<div class='fff fff-spacebetween fff-middle'>
-				<?php if ( $atts['subscribe'] ) echo "<label><input type=checkbox name=subscribe checked> {$atts['subscribe']}</label>"; ?>
-				<input id=mnmlcsub type=submit value=send disabled>
-			</div>
+			<div class='fff fff-spacebetween fff-middle'><?php
+				if ( $atts['subscribe'] ) {
+					if ( "hidden" === $atts['subscribe'] ) echo "<input type=hidden name=subscribe value=on>";
+					else echo "<label><input type=checkbox name=subscribe checked> {$atts['subscribe']}</label>";
+				}
+				if ( $atts['timeout'] ) {
+					echo "<input id=mnmlcsub type=submit value='{$atts['submit']}' disabled>";
+					echo "<script>setTimeout(\"document.getElementById('mnmlcsub').disabled=0\",{$atts['timeout']}e3)</script>";
+				} else {
+					echo "<input id=mnmlcsub type=submit value='{$atts['submit']}'>";
+				}
+			?></div>
 		</div>
-		<script>setTimeout("document.getElementById('mnmlcsub').disabled=0",1e4)</script>
 	</form>
 	<?php
 	return ob_get_clean();
@@ -128,7 +139,8 @@ function mnmlcontact_submit( $request ) {
 		$message .= "{$key}: {$value}\n";
 	}
 
-	$message .= "\nuser agent:\n" . $_SERVER['HTTP_USER_AGENT'];
+	// $message .= "\nuser agent:\n" . $_SERVER['HTTP_USER_AGENT'];
+	$message .= "\nuser IP:\n" . $_SERVER['REMOTE_ADDR'];
 	
 	$sent = wp_mail( $to, $subject, $message, $headers );
 	
