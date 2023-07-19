@@ -25,8 +25,8 @@ Minimalist Contact. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
 add_shortcode( 'mnmlcontact', 'mnmlcontact' );
 function mnmlcontact( $atts, $content='', $tag='' ) {
 
-	$atts = shortcode_atts( array(
-		'subscribe' => 'subscribe',
+	$atts = shortcode_atts([
+		'subscribe' => '',
 		'textarea' => 'message',
 		'name' => 'name',
 		'email' => 'email address',
@@ -36,7 +36,8 @@ function mnmlcontact( $atts, $content='', $tag='' ) {
 		'style' => '',
 		'class' => '',
 		'timeout' => '10',
-	), $atts, $tag );
+		'choice' => '',
+	], $atts, $tag );
 	
 	// Save TO address to database and replace with an ID for privacy
 	$to_field = "";
@@ -63,15 +64,29 @@ function mnmlcontact( $atts, $content='', $tag='' ) {
 		// onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;t.querySelector('#mnmlcsub').style.visibility='hidden';x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
 		?> onsubmit="event.preventDefault();fetch('/wp-json/mnmlcontact/v1/s',{method:'POST',body:new FormData(this),}).then(r=>{return r.json()}).then(r=>{this.innerHTML=r})">
 		<div class="fields-wrapper fff fff-column">
+			<?php
+			if ( $atts['choice'] ) {
+				echo "<div>";
+				$choices = explode('|', $atts['choice'] );
+				foreach( $choices as $i => $choice ) {
+					if ( $i === 0 && isset($choices[2]) ) echo "<span>{$choice}</span> ";
+					else echo "<label><input name=choice value='". trim(strip_tags($choice)) ."' type=radio>{$choice}</label> ";
+				}
+				echo "</div>";
+			}
+			?>
 			<input type=email name=email autocomplete=email placeholder="<?php echo $atts['email']; ?>" required>
 			<input type=text name=name autocomplete=name placeholder="<?php echo $atts['name']; ?>">
 			<?php if ( $atts['textarea'] ) echo "<textarea name=message placeholder='{$atts['textarea']}'></textarea>";
+
+
+
 			if ( $atts['subject'] ) echo "<input type=hidden name=subject value='{$atts['subject']}'>";
 			echo $to_field; ?>
 			<div class='fff fff-spacebetween fff-middle'><?php
 				if ( $atts['subscribe'] ) {
 					if ( "hidden" === $atts['subscribe'] ) echo "<input type=hidden name=subscribe value=on>";
-					else echo "<label><input type=checkbox name=subscribe checked> {$atts['subscribe']}</label>";
+					else echo "<label><input type=checkbox name=subscribe> {$atts['subscribe']}</label>";
 				}
 				if ( $atts['timeout'] ) {
 					echo "<input id=mnmlcsub type=submit value='{$atts['submit']}' disabled>";
@@ -121,14 +136,18 @@ function mnmlcontact_submit( $request ) {
 	if ( empty( $data['subject'] ) )
 	{
 		$subject = get_option('blogname') ." Contact Form";
+
+		if ( !empty( $data['choice'] ) ) $subject .= " [". $data['choice'] ."]";
+		else $subject .= ":";
+
 	}
 	else
 	{
 		$subject = $data['subject'];
 		unset( $data['subject'] );
 	}
-	if ( ! empty( $data['name'] ) ) $subject .= ": {$data['name']}";
-	elseif ( ! empty( $data['email'] ) ) $subject .= ": {$data['email']}";
+	if ( ! empty( $data['name'] ) ) $subject .= " {$data['name']}";
+	elseif ( ! empty( $data['email'] ) ) $subject .= " {$data['email']}";
 	
 	$headers = array();
 	
