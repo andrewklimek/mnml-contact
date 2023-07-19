@@ -60,7 +60,8 @@ function mnmlcontact( $atts, $content='', $tag='' ) {
 	<form id=mnmlcontact method=post<?php
 		if ( $atts['class'] ) echo ' class="' . $atts['class'] . '"';
 		if ( $atts['style'] ) echo ' style="' . $atts['style'] . '"';
-		?> onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;t.querySelector('#mnmlcsub').style.visibility='hidden';x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
+		// onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;t.querySelector('#mnmlcsub').style.visibility='hidden';x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
+		?> onsubmit="event.preventDefault();fetch('/wp-json/mnmlcontact/v1/s',{method:'POST',body:new FormData(this),}).then(r=>{return r.json()}).then(r=>{this.innerHTML=r})">
 		<div class="fields-wrapper fff fff-column">
 			<input type=email name=email autocomplete=email placeholder="<?php echo $atts['email']; ?>" required>
 			<input type=text name=name autocomplete=name placeholder="<?php echo $atts['name']; ?>">
