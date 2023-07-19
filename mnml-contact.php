@@ -70,7 +70,7 @@ function mnmlcontact( $atts, $content='', $tag='' ) {
 				$choices = explode('|', $atts['choice'] );
 				foreach( $choices as $i => $choice ) {
 					if ( $i === 0 && isset($choices[2]) ) echo "<span>{$choice}</span> ";
-					else echo "<label><input name=choice value='". trim(strip_tags($choice)) ."' type=radio>{$choice}</label> ";
+					else echo "<label><input name=choice value='". trim(strip_tags($choice)) ."' type=radio required>{$choice}</label> ";
 				}
 				echo "</div>";
 			}
@@ -135,10 +135,10 @@ function mnmlcontact_submit( $request ) {
 	
 	if ( empty( $data['subject'] ) )
 	{
-		$subject = get_option('blogname') ." Contact Form";
+		// $subject = get_option('blogname') ." Contact Form";
+		$subject = "Contact Form";
 
 		if ( !empty( $data['choice'] ) ) $subject .= " [". $data['choice'] ."]";
-		else $subject .= ":";
 
 	}
 	else
@@ -146,8 +146,8 @@ function mnmlcontact_submit( $request ) {
 		$subject = $data['subject'];
 		unset( $data['subject'] );
 	}
-	if ( ! empty( $data['name'] ) ) $subject .= " {$data['name']}";
-	elseif ( ! empty( $data['email'] ) ) $subject .= " {$data['email']}";
+	if ( ! empty( $data['name'] ) ) $subject .= " - {$data['name']}";
+	elseif ( ! empty( $data['email'] ) ) $subject .= " - {$data['email']}";
 	
 	$headers = array();
 	
