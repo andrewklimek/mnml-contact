@@ -3,24 +3,12 @@
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
 Description: shortcode [mnmlcontact subject='custom email subject' textarea='placeholder text' subscribe='label text or false for no check box'] 
-Version:     0.6.2
+Version:     0.6.3
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-
-Minimalist Contact is free software: you can redistribute it and/or modify 
-it under the terms of the GNU General Public License as published by the Free 
-Software Foundation, either version 2 of the License, or any later version.
-
-Minimalist Contact is distributed in the hope that it will be useful, but without 
-any warranty; without even the implied warranty of merchantability or fitness for a 
-particular purpose. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with 
-Minimalist Contact. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
 */
-
 
 add_shortcode( 'mnmlcontact', 'mnmlcontact' );
 function mnmlcontact( $atts, $content='', $tag='' ) {
@@ -55,14 +43,11 @@ function mnmlcontact( $atts, $content='', $tag='' ) {
 		$to_field = "<input type=hidden name=to value={$to_index}>";
 	}
 	
-	// wp_enqueue_script( 'mnmlcontact-submit' );
-	
 	ob_start();?>
 	<form id=mnmlcontact method=post<?php
 		if ( $atts['class'] ) echo ' class="' . $atts['class'] . '"';
 		if ( $atts['style'] ) echo ' style="' . $atts['style'] . '"';
-		// onsubmit="event.preventDefault();var t=this,x=new XMLHttpRequest;t.querySelector('#mnmlcsub').style.visibility='hidden';x.open('POST','/wp-json/mnmlcontact/v1/s'),x.onload=function(){t.innerHTML=JSON.parse(x.response)},x.send(new FormData(t))">
-		?> onsubmit="event.preventDefault();fetch('/wp-json/mnmlcontact/v1/s',{method:'POST',body:new FormData(this),}).then(r=>{return r.json()}).then(r=>{this.innerHTML=r})">
+		?> onsubmit="event.preventDefault();let b=this.querySelector('#mnmlcsub');b.disabled=true;b.value='sending';fetch('/wp-json/mnmlcontact/v1/s',{method:'POST',body:new FormData(this),}).then(r=>{return r.json()}).then(r=>{this.innerHTML=r})">
 		<div class="fields-wrapper fff fff-column">
 			<?php
 			if ( $atts['choice'] ) {
@@ -204,27 +189,3 @@ function mnmlcontact_submit( $request ) {
 	}
 	
 }
-
-/**
-* Setup JavaScript - Currently putting JS in the form element's onsubmit attribute
-*
-add_action( 'wp_enqueue_scripts', function() {
-
-	$suffix = SCRIPT_DEBUG ? "" : ".min";
-
-	wp_register_script( 'mnmlcontact-submit', plugin_dir_url( __FILE__ ) . 'submit'.$suffix.'.js', null, null );
-
-	//localize data for script
-	// wp_localize_script( 'mnmlcontact-submit', 'FORM_SUBMIT', array(
-		// 			'url' => esc_url_raw( rest_url('mnmlcontact/v1/submit') ),
-		// 			'success' => 'Thanks!',
-		// 			'failure' => 'Your submission could not be processed.',
-		// 		)
-		// 	);
-
-});
-
-add_filter('script_loader_tag', function($tag, $handle) {
-	return ( 'mnmlcontact-submit' !== $handle ) ? $tag : str_replace( ' src', ' defer src', $tag );
-}, 10, 2);
-*/
