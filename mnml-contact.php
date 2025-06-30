@@ -3,7 +3,7 @@
 Plugin Name: Minimalist Contact
 Plugin URI:  https://github.com/andrewklimek/mnml-contact/
 Description: shortcode [mnmlcontact subject='custom email subject' textarea='placeholder text' subscribe='label text or false for no check box'] 
-Version:     0.6.3
+Version:     0.6.4
 Author:      Andrew J Klimek
 Author URI:  https://andrewklimek.com
 License:     GPL2
@@ -146,6 +146,8 @@ function mnmlcontact_submit( $request ) {
 
 	// $message .= "\nuser agent:\n" . $_SERVER['HTTP_USER_AGENT'];
 	$message .= "\nuser IP:\n" . $_SERVER['REMOTE_ADDR'];
+	
+	add_filter( 'wp_mail_from_name', function( $name ){ return $name === 'WordPress' ? get_option( 'blogname' ) : $name; }, 20 );
 	
 	$sent = wp_mail( $to, $subject, $message, $headers );
 	
