@@ -102,7 +102,22 @@ add_action( 'rest_api_init', function () {
 function mnmlcontact_submit( $request ) {
 
 	$data = $request->get_params();
-	$message = '';	
+	$message = '';
+
+	$is_bot_gibberish = function($text) {
+		$len = strlen($text);
+		if ($len < 10 || $len > 200) return false;
+		if (strpos(trim($text), ' ')) return false;
+		$upper = preg_match_all('/[A-Z]/', $text);
+		$lower = preg_match_all('/[a-z]/', $text);
+		return ($upper > 2) && ($lower > 2);
+	};
+
+	if ( $data['message'] && $is_bot_gibberish( $data['message'] ) ) {
+		error_log("GIBBERISH SPAM: " . $data['message'] . " from " . $_SERVER['REMOTE_ADDR']);
+		http_response_code(403);
+		exit;
+	}
 
 	// lowercase email address
 	if ( ! empty( $data['email'] ) ) $data['email'] = strtolower( $data['email'] );
